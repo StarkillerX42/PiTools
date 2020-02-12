@@ -3,4 +3,4 @@
 *.pyc
 geckodriver.log
 *.png
-
+*.key

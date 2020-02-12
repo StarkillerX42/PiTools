@@ -1,25 +1,44 @@
 #!/usr/bin/env python3
 import datetime
 import slack
-import os
 import starcoder42 as s
+from pathlib import Path
+import subprocess as sub
+import sys
 
 now = datetime.datetime.now()
 print("IP Logger started at {}".format(now))
 
-ip_path = os.path.join(os.path.dirname(__file__), "ip_archive.txt")
-ip_archive = open(ip_path, "r")
-my_ip = os.popen("curl -s ipecho.net/plain").read()
+ip_path = (Path(__file__).parent / "ip_archive.txt").absolute()
+my_ip = sub.Popen('dig +short myip.opendns.com @resolver1.opendns.com',
+                  shell=True, stdout=sub.PIPE).stdout.read().decode(
+    'utf-8').strip('\n')
 message = "Your Raspberry Pi's IP Address is: {}".format(my_ip)
-lines = ip_archive.readlines()
-is_there = bool(sum([my_ip in line for line in lines]))
-# print(lines)
-#print(is_there)
-if not is_there: # Posts results to me if it changes on CUAC Research
-    sc = slack.WebClient("xoxb-329888754887-33KgV85uLazdCKxGDI6Dx9eG")
-    sc.chat_postMessage(channel="@dylan.gatlin", text=message)
-# Writes values to the record
-ip_archive.close()
-ip_archive = open(ip_path, "a")
-ip_archive.write("{}, {}\n".format(now, my_ip))
 s.iprint(message, 1)
+
+# Now that we have it, we'll save it
+if not ip_path.exists():
+    ip_path.touch()
+else:
+    ip_archive = ip_path.open('r')
+    lines = ip_archive.readlines()
+    is_there = bool(sum([my_ip in line for line in lines]))
+    ip_archive.close()
+
+    has_argv = False
+    try:
+        sys.argv[1]
+        sys.argv[2]
+        has_argv = True
+    except IndexError:
+        s.iprint('No arguments given', 1)
+
+    if (not is_there) and has_argv:  # Posts results to me
+
+        key = Path(sys.argv[1]).open('r').readline().strip('\n')
+        sc = slack.WebClient(key)
+        sc.chat_postMessage(channel=sys.argv[2], text=message)
+
+# Writes values to the record
+ip_archive = ip_path.open('a')
+ip_archive.write("{}, {}\n".format(now, my_ip))
