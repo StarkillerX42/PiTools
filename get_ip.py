@@ -35,7 +35,8 @@ else:
         sys.argv[1]
         sys.argv[2]
         has_argv = True
-    except IndexError:
+    except IndexError as e:
+        s.iprint(e, 1)
         s.iprint('No arguments given', 1)
 
     if (not is_there) and has_argv:  # Posts results to me
