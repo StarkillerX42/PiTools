@@ -1,4 +1,9 @@
 #!/usr/bin/env python3
+"""A tool for grabbing your router's external IP address.
+This is best run as a daily cronjob with a slack bot to send the values to,
+make sure to specify sys.argv[1] as the slack key file and sys.argv[2] as the
+recipient on slack
+"""
 import datetime
 import slack
 import starcoder42 as s
