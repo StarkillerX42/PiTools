@@ -14,3 +14,4 @@ try:
     print("    Temperature is {:.1f}".format(temp))
 except Exception as e:
     print(e)
+

@@ -38,8 +38,8 @@ else:
     except IndexError as e:
         s.iprint(e, 1)
         s.iprint('No arguments given', 1)
-
     if (not is_there) and has_argv:  # Posts results to me
+        print('Sending IP to {}'.format(sys.argv[1]))
 
         key = Path(sys.argv[1]).open('r').readline().strip('\n')
         sc = slack.WebClient(key)
@@ -48,3 +48,4 @@ else:
 # Writes values to the record
 ip_archive = ip_path.open('a')
 ip_archive.write("{}, {}\n".format(now, my_ip))
+
