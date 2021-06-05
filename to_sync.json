@@ -1,9 +1,22 @@
 {
     "unsynced_paths": [
+        "/media/pi/Seagate Backup Plus Drive/flac/Anna von Hausswolff/All thoughts fly/",
+        "/media/pi/Seagate Backup Plus Drive/flac/Bruce Springsteen/Letter to You/", 
+	"/media/pi/Seagate Backup Plus Drive/flac/Bruce Springsteen/Western Stars/",
+	"/media/pi/Seagate Backup Plus Drive/flac/Jaco Pastorius/Jaco Pastorius/",
+	"/media/pi/Seagate Backup Plus Drive/flac/Miles Davis/Cookin'/", 
+	"/media/pi/Seagate Backup Plus Drive/flac/Miles Davis/Relaxin'/", 
+	"/media/pi/Seagate Backup Plus Drive/flac/Miles Davis/Steamin'/",
+	"/media/pi/Seagate Backup Plus Drive/flac/Miles Davis/Workin'/", 
+	"/media/pi/Seagate Backup Plus Drive/flac/The Lumineers/III/", 
+	"/media/pi/Seagate Backup Plus Drive/flac/Joan Jett and the Blackhearts/Joan Jett and the Backhearts Greatest Hits/", 
+	"/media/pi/Seagate Backup Plus Drive/flac/Taylor Swift/Fearless Taylor's Version CD1/", 
+	"/media/pi/Seagate Backup Plus Drive/flac/Taylor Swift/Fearless Taylor's Version CD2/",
+	"/media/pi/Seagate Backup Plus Drive/flac/David Bowie/Blackstar/"
+	
     ],
-    "source_flac_path": "/media/pi/gracesdrive/flac/",
-    "destination_flac_path": "/media/pi/Seagate Backup Plus Drive",
-    "destination_machine": "pi@10.8.0.6",
+    "source_flac_path": "/media/pi/Seagate Backup Plus Drive/flac/",
+    "destination_flac_path": "/media/pi/gracesdrive/flac/",
+    "destination_machine": "pi@192.168.0.46",
     "last_sync": "2020-05-20"
 }
-

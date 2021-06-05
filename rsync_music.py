@@ -26,14 +26,15 @@ def main(args=parse_args()):
     if "0% packet loss" not in x:
         raise Exception(f"Remote host {dest_machine} not found")
 
-    for source in config["unsynced_paths"]:
+    for src in config["unsynced_paths"]:
+        source = Path(src)
         if not source.is_dir():
             print(f"    Removing {source}, not a directory")
-            config["unsynced_paths"].remove(source)
-            json.dump(config, config_path.open('w'))
+            config["unsynced_paths"].remove(src)
+            if not args.dry_run:
+                json.dump(config, config_path.open('w'))
             continue
 
-        source = Path(source)
         suffix_path = source.relative_to(source_flac_path)
         kwargs = " --dry-run" if args.dry_run else ""
         cmd = (f'rsync -Pavzh --ignore-existing{kwargs} "{source.as_posix()}/"'
@@ -41,17 +42,19 @@ def main(args=parse_args()):
                f':{destination_flac_path / suffix_path}/"')
         try:
             print(cmd)
-            cmd_output = sub.run(cmd, check=False, capture_output=True)
+            cmd_output = sub.run(cmd, shell=True, check=False, capture_output=True)
             # print(cmd_output.stdout)
             if cmd_output.returncode == 0:
                 print(f"    Completed {suffix_path}")
-                config["unsynced_paths"].remove(source)
-                json.dump(config, config_path.open('w'))
+                config["unsynced_paths"].remove(src)
+                if not args.dry_run:
+                    json.dump(config, config_path.open('w'))
 
         except FileNotFoundError:
             print("    Removing {source}, path not found")
-            config["unsynced_paths"].remove(source)
-            json.dump(config, config_path.open('w'))
+            config["unsynced_paths"].remove(src)
+            if not args.dry_run:
+                json.dump(config, config_path.open('w'))
             continue
 
 
