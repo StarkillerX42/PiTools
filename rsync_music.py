@@ -20,11 +20,13 @@ def main(args=parse_args()):
     source_flac_path = config["source_flac_path"]
     destination_flac_path = config["destination_flac_path"]
     dest_machine = config["destination_machine"]
-
-    if sub.run(["ping", "-c", "1", dest_machine]).returncode != 0:
-        raise Exception(f"Remote host {dest_machine} not found")
-
+    # print(sub.check_output("ping -c 1 192.168.0.1", shell=True))
+    # if sub.run(["ping", "-c", "1", dest_machine]).returncode != 0:
+    #     raise Exception(f"Remote host {dest_machine} not found")
+    test = 9
+    
     for source in config["unsynced_paths"]:
+        print("{test}")
         if not source.is_dir():
             print(f"    Removing {source}, not a directory")
             config["unsynced_paths"].remove(source)
