@@ -14,19 +14,19 @@ def parse_args():
 def main(args=parse_args()):
     here = Path(__file__).absolute().parent
     config_path = here / "to_sync.json"
-    
+
     config = json.load(config_path.open('r'))
-    
+
     source_flac_path = config["source_flac_path"]
     destination_flac_path = config["destination_flac_path"]
     dest_machine = config["destination_machine"]
-    # print(sub.check_output("ping -c 1 192.168.0.1", shell=True))
-    # if sub.run(["ping", "-c", "1", dest_machine]).returncode != 0:
-    #     raise Exception(f"Remote host {dest_machine} not found")
-    test = 9
-    
+    x = sub.check_output(f'ping -c 1 "{dest_machine.strip("pi@")}"', shell=True
+                         ).decode("utf-8")
+    # print(x)
+    if "0% packet loss" not in x:
+        raise Exception(f"Remote host {dest_machine} not found")
+
     for source in config["unsynced_paths"]:
-        print("{test}")
         if not source.is_dir():
             print(f"    Removing {source}, not a directory")
             config["unsynced_paths"].remove(source)
@@ -46,15 +46,14 @@ def main(args=parse_args()):
             if cmd_output.returncode == 0:
                 print(f"    Completed {suffix_path}")
                 config["unsynced_paths"].remove(source)
-                json.dump(config,config_path.open('w'))
+                json.dump(config, config_path.open('w'))
 
-        except FileNotFoundError as e:
+        except FileNotFoundError:
             print("    Removing {source}, path not found")
             config["unsynced_paths"].remove(source)
-            json.dump(config,config_path.open('w'))
+            json.dump(config, config_path.open('w'))
             continue
 
 
 if __name__ == "__main__":
     main()
-
