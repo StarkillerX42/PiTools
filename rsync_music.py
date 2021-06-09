@@ -8,7 +8,7 @@ from astropy.time import Time
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--dry-run", action="store_true",
+    parser.add_argument("-n", "--dry-run", action="store_true",
                         help="Passed on to rsync for testing")
     parser.add_argument("-v", "--verbose", action="store_true",
                         help="Verbose printing, also passed to rsync")
@@ -17,6 +17,7 @@ def parse_args():
 
 def main(args=parse_args()):
     t_start = Time.now()
+    print(f"Starting RSync Music at {t_start.isot}")
     here = Path(__file__).absolute().parent
     config_path = here / "to_sync.json"
 
@@ -29,8 +30,12 @@ def main(args=parse_args()):
     if config["last_sync"] == t_start.isot[:10]:
         raise ValueError("Last sync was today, not syncing")
 
-    x = sub.check_output(f'ping -c 1 "{dest_machine.strip("pi@")}"', shell=True
-                         ).decode("utf-8")
+    try:
+        x = sub.check_output(f'ping -c 1 "{dest_machine.strip("pi@")}"',
+                             shell=True).decode("utf-8")
+    except sub.CalledProcessError:
+        x = ""
+
     # print(x)
     if "0% packet loss" not in x:
         raise Exception(f"Remote host {dest_machine} not found")
@@ -38,7 +43,11 @@ def main(args=parse_args()):
     for src in config["unsynced_paths"]:
         if ((Time.now() - t_start) * 24).value > 5:
             print("Ran out of time")
+            outfig["last_sync"] = Time.now().isot[:10]
+            if not args.dry_run:
+                json.dump(outfig, config_path.open('w'))
             exit()
+
         source = Path(src)
         suffix_path = source.relative_to(source_flac_path)
         print(f"Starting {suffix_path}")
@@ -51,21 +60,22 @@ def main(args=parse_args()):
                     json.dump(outfig, fil)
             continue
 
-        dry_run = " --dry-run" if args.dry_run else ""
+        rargs = "n" if args.dry_run else ""
 
-        v = "v" if args.verbose else  ""
+        rargs += "v" if args.verbose else  ""
         dest = (destination_flac_path / suffix_path).as_posix().replace(
                 " ", "\\ ")
-        cmd = (f'rsync -Pa{v}zh --ignore-existing{dry_run} "{source.as_posix()}/"'
+        cmd = (f'rsync -Pa{rargs}zh --ignore-existing "{source.as_posix()}/"'
                f' "{dest_machine}'
-               f':{dest}"')
+               f':{dest}/"')
         try:
             if args.verbose:
                 print(cmd)
             cmd_output = sub.run(cmd, shell=True, check=False, capture_output=True)
             if args.verbose:
                 print("stdout: ", cmd_output.stdout.decode("utf-8"))
-                print("stderr: ", cmd_output.stderr.decode("utf-8"))
+                if cmd_output.stderr:
+                    print("stderr: ", cmd_output.stderr.decode("utf-8"))
             
             if cmd_output.returncode == 0:
                 print(f"    Completed {suffix_path}")
@@ -95,3 +105,4 @@ def main(args=parse_args()):
 
 if __name__ == "__main__":
     main()
+
