@@ -21,6 +21,8 @@ def main(args=parse_args()):
     print(f"Starting RSync Music at {t_start.isot}")
     here = Path(__file__).absolute().parent
     config_path = here / "to_sync.json"
+    log_file = here / "rsync_music.log"
+    log = log_file.open('a')
 
     config = json.load(config_path.open('r'))
     outfig = copy.deepcopy(config)
@@ -81,6 +83,7 @@ def main(args=parse_args()):
             if cmd_output.returncode == 0:
                 print(f"    Completed {suffix_path}")
                 outfig["unsynced_paths"].remove(src)
+                log.write(suffix_path + '\n')
                 if not args.dry_run:
                     with config_path.open('w') as fil:
                         json.dump(outfig, fil)
