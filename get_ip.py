@@ -5,7 +5,7 @@ make sure to specify sys.argv[1] as the slack key file and sys.argv[2] as the
 recipient on slack
 """
 import datetime
-import slack
+import slack_sdk
 import starcoder42 as s
 from pathlib import Path
 import subprocess as sub
@@ -37,7 +37,7 @@ else:
         has_argv = True
     except IndexError as e:
         s.iprint(e, 1)
-        s.iprint('No arguments given', 1)
+        s.iprint('No arguments given, need a config file and a channel', 1)
     if (not is_there) and has_argv:  # Posts results to me
         print('Sending IP to {}'.format(sys.argv[1]))
 

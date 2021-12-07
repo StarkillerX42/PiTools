@@ -1,17 +1,17 @@
 #!/usr/bin/env python3
-import datetime
-import os
-try:
-    now = datetime.datetime.now()
-    print("Temperature Logger started at at {}".format(now))
-    temp = os.popen("/opt/vc/bin/vcgencmd measure_temp").read()
-    temp = float(temp.split("=")[1].split("'")[0])
-    # print(u"    Temperature: {:.1f}\N{DEGREE SIGN}".format(temp))
-    temppath = os.path.join(os.path.dirname(
-             os.path.abspath(__file__)), "temp_log.txt")
-    with open(temppath, "a") as log:
-        log.write(u"{},  {:.1f}\n".format(now, temp))
-    print("    Temperature is {:.1f}".format(temp))
-except Exception as e:
-    print(e)
+import subprocess as sub
+from astropy.time import Time
+from pathlib import Path
+
+import starcoder42 as s
+
+x = sub.check_output("sensors").decode("utf-8")
+for line in x.splitlines():
+    if "temp" in line:
+        temp = line.split()[1][1:]
+s.iprint(f"The temperature is {temp}", 1)
+here = Path(__file__).parent
+log = here / "temp_log.txt"
+with log.open('a') as fil:
+    fil.write(f"{Time.now().iso},{temp[:-2]:>6}\n")
 
