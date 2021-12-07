@@ -41,7 +41,8 @@ else:
     if (not is_there) and has_argv:  # Posts results to me
         print('Sending IP to {}'.format(sys.argv[1]))
 
-        key = Path(sys.argv[1]).open('r').readline().strip('\n')
+        key = (Path(__file__).parent / sys.argv[1]
+                ).open('r').readline().strip('\n')
         sc = slack.WebClient(key)
         sc.chat_postMessage(channel=sys.argv[2], text=message)
 
