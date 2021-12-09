@@ -83,7 +83,7 @@ def main(args=parse_args()):
             if cmd_output.returncode == 0:
                 print(f"    Completed {suffix_path}")
                 outfig["unsynced_paths"].remove(src)
-                log.write(suffix_path + '\n')
+                log.write(suffix_path.as_posix() + '\n')
                 if not args.dry_run:
                     with config_path.open('w') as fil:
                         json.dump(outfig, fil)
