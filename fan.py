@@ -12,9 +12,9 @@ print(f'Fan control started at {start}')
 
 procs = sub.Popen("ps auxf", stdout=sub.PIPE, shell=True)
 lines = np.array(procs.stdout.readlines())
-is_alarm = np.array([("/fan.py" in str(proc))
+is_fan = np.array([("/fan.py" in str(proc))
                      for proc in lines])
-to_kill = lines[is_alarm]
+to_kill = lines[is_fan]
 
 for proc in to_kill:
     parts = proc.split()

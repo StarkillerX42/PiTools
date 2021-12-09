@@ -3,12 +3,19 @@ import matplotlib as mpl
 mpl.use("Agg")
 import matplotlib.pyplot as plt
 from astropy.time import Time
+import tqdm
+
+
 times = []
 temps = []
 with open("temp_log.txt", "r") as fil:
-    for i, line in enumerate(fil):
+    for line in tqdm.tqdm(fil.readlines()):
         t, temp = line.split(",")
-        times.append(Time(t).plot_date)
+        temp = temp.strip('\n')
+        try:
+            times.append(Time(t, format='iso').plot_date)
+        except:
+            continue
         temps.append(float(temp))
 times = np.array(times)
 temps = np.array(temps)
