@@ -4,3 +4,5 @@
 geckodriver.log
 *.png
 *.key
+*.json
+*.log

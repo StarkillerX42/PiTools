@@ -67,8 +67,8 @@ def main(args=parse_args()):
 
         rargs += "v" if args.verbose else  ""
         dest = (destination_flac_path / suffix_path).as_posix().replace(
-                " ", "\\ ")
-        cmd = (f'rsync -Pa{rargs}zh --ignore-existing "{source.as_posix()}/"'
+                " ", "\\ ").replace("(", "\(").replace(")", "\)")
+        cmd = (f'rsync -Pac{rargs}zh "{source.as_posix()}/"'
                f' "{dest_machine}'
                f':{dest}/"')
         try:
