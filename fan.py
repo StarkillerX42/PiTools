@@ -6,6 +6,8 @@ import datetime
 import sys
 import numpy as np
 import starcoder42 as s
+import argparse
+import get_temp
 
 start = datetime.datetime.now()
 print(f'Fan control started at {start}')
@@ -25,24 +27,41 @@ for proc in to_kill:
     if dt > datetime.timedelta(hours=23):
         sub.call(['kill', pid])
 
-port = int(sys.argv[1])
-threshhold = float(sys.argv[2])
-fan = LED(port)
 
-try:
-    cond = True
-    while cond: # Run forever
-        temp = str(sub.Popen(['/opt/vc/bin/vcgencmd', 'measure_temp'],
-                             stdout=sub.PIPE).stdout.read())
-        temp = float(temp.split("=")[1].split("'")[0])
-        if temp >threshhold:
-            fan.on()
-        else:
-            fan.off()
-        sleep(60)
-        dt = datetime.datetime.now() - start
-        cond = dt.seconds < 60*60*12
-        s.iprint((dt.seconds, temp), 1)
-except KeyboardInterrupt:
-    GPIO.cleanup()
-    sys.exit()
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("port", type=int, default=2)
+    parser.add_argument("threshhold", type=float, default=60)
+
+    args = parser.parse_args()
+
+    return args
+
+    
+def main(args=None):
+    if args is None:
+        args = parse_args()
+    
+    fan = LED(args.port)
+    print(dir(fan))
+    try:
+        cond = True
+        while cond: # Run forever
+            temp = get_temp.get_temp_float()
+            if temp > args.threshhold:
+                fan.on()
+            else:
+                fan.off()
+            sleep(60)
+            dt = datetime.datetime.now() - start
+            cond = dt.seconds < 60*60*12
+            s.iprint((dt.seconds, temp), 1)
+
+    except KeyboardInterrupt:
+        fan.off()
+        sys.exit()
+
+
+if __name__ == "__main__":
+    main()
+
