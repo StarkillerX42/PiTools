@@ -3,8 +3,6 @@ import subprocess as sub
 from astropy.time import Time
 from pathlib import Path
 
-import starcoder42 as s
-
 
 def get_temp():
 
