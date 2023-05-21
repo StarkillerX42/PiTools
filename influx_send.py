@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import os
+import socket
 import click
 import logging
 import influxdb_client
@@ -12,9 +12,9 @@ from pitools.hw import get_temp, get_ip, get_cpu, get_mem
 
 def get_token() -> tuple[str]:
     here = Path(__file__).absolute().parent
-    token_path = here / f".{os.environ['HOSTNAME']}.key"
+    token_path = here / f".{socket.gethostname()}.key"
     if not token_path.exists():
-        logging.error(f"No token file at .{os.environ['HOSTNAME']}.key")
+        logging.error(f"No token file at .{socket.gethostname()}.key")
     with token_path.open("r") as fil:
         host = fil.readline().rstrip("\n")
         org_id = fil.readline().rstrip("\n")
@@ -38,7 +38,7 @@ def main(verbose: int = 0):
         bucket="home",
         org=org_id,
         record=influxdb_client.Point("temperature")
-        .tag("device", os.environ["HOSTNAME"])
+        .tag("device", socket.gethostname())
         .field("cpu_temp", get_temp()),
     )
 
@@ -51,7 +51,7 @@ def main(verbose: int = 0):
             bucket="home",
             org=org_id,
             record=influxdb_client.Point("cpu")
-            .tag("device", os.environ["HOSTNAME"])
+            .tag("device", socket.gethostname())
             .field(n, u),
         )
     ram = get_mem()
@@ -61,17 +61,17 @@ def main(verbose: int = 0):
             bucket="home",
             org=org_id,
             record=influxdb_client.Point("memory")
-            .tag("device", os.environ["HOSTNAME"])
+            .tag("device", socket.gethostname())
             .field(n, u),
         )
 
     # IP address
-    if os.environ["HOSTNAME"] == "cherrypi":
+    if socket.gethostname() == "cherrypi":
         write_api.write(
             bucket="home",
             org=org_id,
             record=influxdb_client.Point("ip_address")
-            .tag("device", os.environ["HOSTNAME"])
+            .tag("device", socket.gethostname())
             .field("ip_address", get_ip()),
         )
 

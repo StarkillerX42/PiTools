@@ -1,4 +1,3 @@
-*.txt
 .idea
 *.pyc
 geckodriver.log
@@ -6,3 +5,4 @@ geckodriver.log
 *.key
 *.json
 *.log
+
