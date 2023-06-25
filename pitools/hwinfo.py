@@ -20,7 +20,7 @@ def get_ip() -> str | None:
         capture_output=True,
         encoding="utf-8",
     )
-    ip = ipCmd.stdout
+    ip = ipCmd.stdout.rstrip("\n")
     if ip == "":
         return None
     else:
@@ -55,8 +55,16 @@ def get_mem() -> list[int]:
     return ret
 
 
-def get_ups() -> float | None:
-    """
-    TODO see if this can be implemented
-    """
-    return None
+def main():
+    print("get_temp")
+    print(get_temp())
+    print("get_ip")
+    print(get_ip())
+    print("get_cpu")
+    print(get_cpu())
+    print("get_mem")
+    print(get_mem())
+
+
+if __name__  == "__main__":
+    main()

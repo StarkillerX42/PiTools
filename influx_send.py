@@ -7,10 +7,10 @@ import influxdb_client
 from pathlib import Path
 from influxdb_client.client.write_api import SYNCHRONOUS
 
-from pitools.hw import get_temp, get_ip, get_cpu, get_mem
+from pitools.hwinfo import get_temp, get_ip, get_cpu, get_mem
 
 
-def get_token() -> tuple[str]:
+def get_token() -> tuple[str, str, str]:
     here = Path(__file__).absolute().parent
     token_path = here / f".{socket.gethostname()}.key"
     if not token_path.exists():
