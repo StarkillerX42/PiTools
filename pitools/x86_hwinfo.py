@@ -3,7 +3,7 @@ import regex as re
 import subprocess as sub
 
 
-def get_ups() -> tuple:
+def get_ups() -> tuple[int | None, int | None, int | None]:
     loadRE = re.compile(r"(?<=Load\.+ \d+\s*Watt\()\d+")
     capRE = re.compile(r"(?<=Battery Capacity\.+\s*)\d+")
     runRE = re.compile(r"(?<=Remaining Runtime\.+\s*)\d+")

@@ -27,7 +27,7 @@ def get_ip() -> str | None:
         return ip
 
 
-def get_cpu() -> tuple[int]:
+def get_cpu() -> tuple[int, int, int, int]:
     """
     Returns:
         tuple(int): The ratio of user, nice user, system, and total CPU usage
@@ -44,7 +44,7 @@ def get_cpu() -> tuple[int]:
     return usage[0] / tot, usage[1] / tot, usage[2] / tot, np.sum(usage[:3]) / tot
 
 
-def get_mem() -> list[int]:
+def get_mem() -> tuple[int, ...]:
     free = sub.run(["free"], capture_output=True, encoding="utf-8")
     ret = []
     for line in free.stdout.splitlines():
@@ -52,7 +52,7 @@ def get_mem() -> list[int]:
             ret.append(int(line.split()[2]))
             ret.append(int(line.split()[1]))
 
-    return ret
+    return tuple(ret)
 
 
 def main():
