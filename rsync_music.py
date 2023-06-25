@@ -9,10 +9,15 @@ from astropy.time import Time
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument("-n", "--dry-run", action="store_true",
-                        help="Passed on to rsync for testing")
-    parser.add_argument("-v", "--verbose", action="store_true",
-                        help="Verbose printing, also passed to rsync")
+    parser.add_argument(
+        "-n", "--dry-run", action="store_true", help="Passed on to rsync for testing"
+    )
+    parser.add_argument(
+        "-v",
+        "--verbose",
+        action="store_true",
+        help="Verbose printing, also passed to rsync",
+    )
     return parser.parse_args()
 
 
@@ -22,9 +27,9 @@ def main(args=parse_args()):
     here = Path(__file__).absolute().parent
     config_path = here / "to_sync.json"
     log_file = here / "rsync_music.log"
-    log = log_file.open('a')
+    log = log_file.open("a")
 
-    config = json.load(config_path.open('r'))
+    config = json.load(config_path.open("r"))
     outfig = copy.deepcopy(config)
 
     source_flac_path = config["source_flac_path"]
@@ -34,8 +39,9 @@ def main(args=parse_args()):
         raise ValueError("Last sync was today, not syncing")
 
     try:
-        x = sub.check_output(f'ping -c 1 "{dest_machine.strip("pi@")}"',
-                             shell=True).decode("utf-8")
+        x = sub.check_output(
+            f'ping -c 1 "{dest_machine.strip("pi@")}"', shell=True
+        ).decode("utf-8")
     except sub.CalledProcessError:
         x = ""
 
@@ -48,7 +54,7 @@ def main(args=parse_args()):
             print("Ran out of time")
             outfig["last_sync"] = Time.now().isot[:10]
             if not args.dry_run:
-                json.dump(outfig, config_path.open('w'))
+                json.dump(outfig, config_path.open("w"))
             exit()
 
         source = Path(src)
@@ -59,18 +65,25 @@ def main(args=parse_args()):
             print(f"    Removing {source}, not a directory")
             outfig["unsynced_paths"].remove(src)
             if not args.dry_run:
-                with config_path.open('w') as fil:
+                with config_path.open("w") as fil:
                     json.dump(outfig, fil)
             continue
 
         rargs = "n" if args.dry_run else ""
 
-        rargs += "v" if args.verbose else  ""
-        dest = (destination_flac_path / suffix_path).as_posix().replace(
-                " ", "\\ ").replace("(", "\(").replace(")", "\)")
-        cmd = (f'rsync -Pac{rargs}zh "{source.as_posix()}/"'
-               f' "{dest_machine}'
-               f':{dest}/"')
+        rargs += "v" if args.verbose else ""
+        dest = (
+            (destination_flac_path / suffix_path)
+            .as_posix()
+            .replace(" ", "\\ ")
+            .replace("(", "\(")
+            .replace(")", "\)")
+        )
+        cmd = (
+            f'rsync -Pac{rargs}zh "{source.as_posix()}/"'
+            f' "{dest_machine}'
+            f':{dest}/"'
+        )
         try:
             if args.verbose:
                 print(cmd)
@@ -79,13 +92,13 @@ def main(args=parse_args()):
                 print("stdout: ", cmd_output.stdout.decode("utf-8"))
                 if cmd_output.stderr:
                     print("stderr: ", cmd_output.stderr.decode("utf-8"))
-            
+
             if cmd_output.returncode == 0:
                 print(f"    Completed {suffix_path}")
                 outfig["unsynced_paths"].remove(src)
-                log.write(suffix_path.as_posix() + '\n')
+                log.write(suffix_path.as_posix() + "\n")
                 if not args.dry_run:
-                    with config_path.open('w') as fil:
+                    with config_path.open("w") as fil:
                         json.dump(outfig, fil)
         # Originally I thought this could be used if the path
         # isn't found, but this only came up when shell=True
@@ -104,9 +117,8 @@ def main(args=parse_args()):
 
     outfig["last_sync"] = Time.now().isot[:10]
     if not args.dry_run:
-        json.dump(outfig, config_path.open('w'))
+        json.dump(outfig, config_path.open("w"))
 
 
 if __name__ == "__main__":
     main()
-

@@ -66,5 +66,5 @@ def main():
     print(get_mem())
 
 
-if __name__  == "__main__":
+if __name__ == "__main__":
     main()

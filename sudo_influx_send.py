@@ -8,7 +8,7 @@ import influxdb_client
 from pathlib import Path
 from influxdb_client.client.write_api import SYNCHRONOUS
 
-from pitools.x86_hwinfo import get_ups_stats
+from pitools.x86_hwinfo import get_ups
 
 
 def get_token() -> tuple[str, str, str]:
@@ -36,7 +36,7 @@ def main(verbose: int = 0):
     client = influxdb_client.InfluxDBClient(url=host, token=token, org=org_id)
     write_api = client.write_api(write_options=SYNCHRONOUS)
 
-    ups = get_ups_stats()
+    ups = get_ups()
     for n, u in zip(("load", "capacity", "runtime"), ups):
         write_api.write(
             bucket="home",

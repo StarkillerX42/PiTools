@@ -2,4 +2,4 @@ click
 influxdb_client
 regex
 numpy
-
+selenium
