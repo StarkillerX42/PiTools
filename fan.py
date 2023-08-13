@@ -5,7 +5,6 @@ from time import sleep  # Import the sleep function from the time module
 import datetime
 import sys
 import numpy as np
-import starcoder42 as s
 import argparse
 import get_temp
 
@@ -54,7 +53,7 @@ def main(args=None):
             sleep(60)
             dt = datetime.datetime.now() - start
             cond = dt.seconds < 60 * 60 * 12
-            s.iprint((dt.seconds, temp), 1)
+            pprint(dt.seconds, temp), indent=4)
 
     except KeyboardInterrupt:
         fan.off()
@@ -63,3 +62,4 @@ def main(args=None):
 
 if __name__ == "__main__":
     main()
+
