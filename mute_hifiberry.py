@@ -4,11 +4,12 @@ import time
 import datetime
 import subprocess as sub
 import numpy as np
-import starcoder42 as s
+
 from pathlib import Path
+from pprint import pprint
 
 start = time.time()
-s.iprint(f"[{start:12.0f}] HiFiBerry Muter started", 0)
+pprint(f"[{start:12.0f}] HiFiBerry Muter started", indent=0)
 
 try:
     state = sys.argv[1]
@@ -46,8 +47,8 @@ if state == "daemon":
 
 else:
     if state == "off":
-        s.iprint(f"[{time.time():12.0f}] Unmuting", 1)
+        pprint(f"[{time.time():12.0f}] Unmuting", indent=4)
     elif state == "on":
-        s.iprint(f"[{time.time():12.0f}] Muting", 1)
+        pprint(f"[{time.time():12.0f}] Muting", indent=4)
     with state_file.open("w") as fil:
         fil.write(state)

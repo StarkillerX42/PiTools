@@ -1,20 +1,19 @@
 #!/usr/bin/env python3
-from gpiozero import LED
-import subprocess as sub
-from time import sleep  # Import the sleep function from the time module
+
 import datetime
 import sys
-import numpy as np
-import starcoder42 as s
 import argparse
-import get_temp
 
-start = datetime.datetime.now()
-print(f"Fan control started at {start}")
+import numpy as np
+import subprocess as sub
 
+from gpiozero import LED
+
+
+# Prevent duplicate processes
 procs = sub.Popen("ps auxf", stdout=sub.PIPE, shell=True)
 lines = np.array(procs.stdout.readlines())
-is_fan = np.array([("/fan.py" in str(proc)) for proc in lines])
+is_fan = np.array([("fan.py" in proc) for proc in lines])
 to_kill = lines[is_fan]
 
 for proc in to_kill:
@@ -31,6 +30,8 @@ def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("port", type=int, default=2)
     parser.add_argument("threshhold", type=float, default=60)
+    parser.add_argument("-d", "--daytime", action="store_true")
+    parser.add_argument("-v", "--verbose", action="count")
 
     args = parser.parse_args()
 
@@ -40,21 +41,29 @@ def parse_args():
 def main(args=None):
     if args is None:
         args = parse_args()
+    if args.verbose:
+        start = datetime.datetime.now()
+        print(f"Fan control started at {start}")
 
     fan = LED(args.port)
-    print(dir(fan))
     try:
         cond = True
         while cond:  # Run forever
             temp = get_temp.get_temp_float()
-            if temp > args.threshhold:
+            fan_on = temp > args.threshhold
+            now = dattime.datetime.now()
+            fan_on = (
+                fan_on and (now.hour > 7) and (now.hour < 20)
+                if args.daytime
+                else fan_on
+            )
+            if fan_on:
                 fan.on()
             else:
                 fan.off()
+
             sleep(60)
             dt = datetime.datetime.now() - start
-            cond = dt.seconds < 60 * 60 * 12
-            s.iprint((dt.seconds, temp), 1)
 
     except KeyboardInterrupt:
         fan.off()
