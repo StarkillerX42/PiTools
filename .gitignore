@@ -7,4 +7,5 @@ geckodriver.log
 *.key
 *.json
 *.log
-
+.python-version
+mute_state.txt

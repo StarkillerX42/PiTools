@@ -8,8 +8,8 @@ import numpy as np
 
 
 procs = sub.run(["ps", "auxf"], stdout=sub.PIPE, shell=True, encoding="utf-8")
-lines = np.array(procs.stdout.readlines())
-is_fairy = np.array([("/fairy_lights.py" in str(proc)) for proc in lines])
+lines = np.array(procs.stdout.splitlines())
+is_fairy = np.array([("fairy_lights.py" in proc) for proc in lines])
 to_kill = lines[is_fairy]
 
 for proc in to_kill:
@@ -29,7 +29,7 @@ def main():
     lights = LED(port)
     lights.on()
     while True:
-        sleep(500)
+        sleep(60)
 
 
 class Lights:
