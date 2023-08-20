@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-import datetime
 import sys
+import datetime
 import argparse
 
 import numpy as np
@@ -72,3 +72,4 @@ def main(args=None):
 
 if __name__ == "__main__":
     main()
+
