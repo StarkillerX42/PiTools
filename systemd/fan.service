@@ -1,0 +1,13 @@
+[Unit]
+Description=GPIO Cooling Fan
+
+[Service]
+Type=exec
+ExecStart=/home/pi/.local/share/pyenv/versions/snakes10/bin/python /home/pi/software/PiTools/fan.py -d 27 60
+Restart=on-failure
+RestartSec=30
+TimeoutStopSec=10
+
+[Install]
+WantedBy=multi-user.target
+
